@@ -15,10 +15,9 @@ mu <- 8 - 2*x1 + f1
 set.seed(777)
 y <- rnorm(n, mu)
 dat <- data.frame(y, x1, u1, f1, mu)
-rm(x1, u1, f1, mu, n, y)
 
 # plot
-par(mar=c(4.5,4.5,1,1), mfrow=c(1,2))
+par(mar=c(4.5,5.5,1,1), mfrow=c(1,3), cex.lab=2, cex.axis=1.7, pch=19)
 plot(f1~u1, data=dat)
 plot(y~u1, data=dat)
 

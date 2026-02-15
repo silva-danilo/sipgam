@@ -2,16 +2,16 @@
 # packs
 library(readr)
 library(viridis)
-require(pROC)
+library(pROC)
 
 # setwd
-setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
+#setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
 #setwd("/mnt/chromeos/removable/danvah/sipgam")
-#setwd("D:/sipgam")
+setwd("D:/sipgam")
 
-# load gasim
-source("R/gasim_berno.R")
-
+# load gplsiam
+source("R/gplsiam_berno.R")
+          
 # load data
 dat <- readRDS("data/bike_hour_casa.rds")
 by <- as.numeric(dat$yr)
@@ -22,8 +22,8 @@ U <- list(dat$yday, dat$hr)
 Z1 <- model.matrix(~windspeed+hum+temp-1, data=dat)
 Z <- list(Z1, Z1)
 y <- dat$hdemand
-time <- system.time(b <- gasim(X, U, Z, y, by), gcFirst=T)[3]
-round(time, 2)
+time <- system.time(b <- gplsiam(X, U, Z, y, by), gcFirst=T)[3]
+time
 
 # summary beta
 ini <- b$psi_pos$ini[1]
@@ -110,13 +110,16 @@ polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
         col=adjustcolor(palet[1], alpha=0.5), border=NA)
 
 # plot
-res_gasim(b, y)
+res_gplsiam(b, y)
 
-# plot
+# plot roc
 par(mar=c(4.5,5,1,1), mfrow=c(1,2), cex.lab=1.4, cex.axis=1.1, pch=19)
 roc(dat$hdemand, b$mu, xlab="specificity", ylab="sensitivity",
     print.auc=T, plot=T, levels=0:1, direction="<")
-optimal_coords <- roc(dat$hdemand, b$mu, levels=0:1, direction="<")
-optimal_coords <- coords(optimal_coords, "best", 
+
+# summary auc
+roc <- roc(dat$hdemand, b$mu, levels=0:1, direction="<")
+roc$auc
+optimal_coords <- coords(roc, "best", 
                          ret=c("specificity", "sensitivity", "threshold"))
-round(optimal_coords, 2)
+round(optimal_coords, 3)

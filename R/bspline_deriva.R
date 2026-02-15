@@ -21,7 +21,7 @@ dat <- data.frame(y, x1, u1, f1, df1, mu)
 rm(x1, u1, f1, df1, mu, n, y)
 
 # plot
-par(mar=c(4.5,4.5,1,1), mfrow=c(1,2))
+par(mar=c(4.5,5.5,1,1), mfrow=c(1,3), cex.lab=2, cex.axis=1.7, pch=19)
 plot(f1~u1, data=dat)
 plot(df1~u1, data=dat)
 
@@ -33,10 +33,11 @@ fin <- b1$smooth[[1]]$last.para
 N <- model.matrix(b1)[,ini:fin]
 coef <- coef(b1)[ini:fin]
 f1_pred <- N%*%coef
-par(mar=c(4.5,4.5,1,1), mfrow=c(1,2))
+
+# plot
+par(mar=c(4.5,5.5,1,1), mfrow=c(1,3), cex.lab=2, cex.axis=1.7, pch=19)
 plot(f1_pred~u1, data=dat)
 plot(f1~u1, data=dat)
-rm(coef, f1_pred, N, ini, fin)
 
 # df mgcv
 b2 <- b1
@@ -46,12 +47,13 @@ fin <- b1$smooth[[1]]$last.para
 dN <- model.matrix(b2)[,ini:fin]
 coef <- coef(b1)[ini:fin]
 df1_pred <- dN%*%coef
-par(mar=c(4.5,4.5,1,1), mfrow=c(1,2))
+
+# plot
+par(mar=c(4.5,5.5,1,1), mfrow=c(1,3), cex.lab=2, cex.axis=1.7, pch=19)
 plot(df1_pred~u1, data=dat)
 plot(df1~u1, data=dat)
-rm(coef, df1_pred, dN, ini, fin)
 
-# fu lm
+# f lm
 t <- seq(min(dat$u1), max(dat$u1), length.out=5+2)
 t <- t[-c(1, 5+2)]
 t <- c(rep(min(dat$u1), 4), t, rep(max(dat$u1), 4))
@@ -64,12 +66,13 @@ b3 <- lm(y ~ x1 + N, data=dat)
 summary(b3)
 coef <- coef(b3)
 f1_pred <- N%*%coef[-c(1:2)]
-par(mar=c(4.5,4.5,1,1), mfrow=c(1,2))
+
+# plot
+par(mar=c(4.5,5.5,1,1), mfrow=c(1,3), cex.lab=2, cex.axis=1.7, pch=19)
 plot(f1_pred~u1, data=dat)
 plot(f1~u1, data=dat)
-rm(coef, f1_pred, N, m, n, t)
 
-# dfu lm
+# df lm
 t <- seq(min(dat$u1), max(dat$u1), length.out=5+2)
 t <- t[-c(1, 5+2)]
 t <- c(rep(min(dat$u1), 4), t, rep(max(dat$u1), 4))
@@ -80,7 +83,8 @@ dN <- dN - rep(1, n)%*%t(rep(1, n))%*%dN/n
 dN <- dN[,-(m-4)]
 coef <- coef(b3)
 df1_pred <- dN%*%coef[-c(1:2)]
-par(mar=c(4.5,4.5,1,1), mfrow=c(1,2))
+
+# plot
+par(mar=c(4.5,5.5,1,1), mfrow=c(1,3), cex.lab=2, cex.axis=1.7, pch=19)
 plot(df1_pred~u1, data=dat)
 plot(df1~u1, data=dat)
-rm(coef, df1_pred, dN, m, n, t)

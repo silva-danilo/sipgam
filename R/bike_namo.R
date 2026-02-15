@@ -7,9 +7,9 @@ library(lubridate)
 library(viridis)
 
 # setwd
-setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
+#setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
 #setwd("/mnt/chromeos/removable/danvah/sipgam")
-#setwd("D:/sipgam")
+setwd("D:/sipgam")
 
 # load data
 dat <- read_csv("data/bike_hour.csv")
@@ -195,15 +195,15 @@ legend("top", legend=c("loess [year = 2012]"), cex=1.3,
 #      cex.lab=1.7, cex.axis=1.2, pch=19)
 
 # model
-#ids <- dat$instant %in% c(15993, 13341, 13677)
 b <- gam(hdemand~s(temp,by=yr)+s(hum,by=yr)+s(windspeed,by=yr)+s(hr)+s(yday)+
          yr+holiday+weekday, family=binomial, data=dat)
 summary(b)
 
-# diag
-par(mar=c(4.5,5,1,1), mfrow=c(2,2))
-gam.check(b, rep=200, cex=0.5, level=0.95,
-          cex.lab=1.7, cex.axis=1.2, pch=19, lwd=2)
+# # diag
+# par(mar=c(4.5,5,1,1), mfrow=c(2,2))
+# gam.check(b, rep=200, cex=0.5, level=0.95,
+#           cex.lab=1.7, cex.axis=1.2, pch=19, lwd=2)
+# ids <- dat$instant %in% c(15993, 13341, 13677)
 
 # terms
 par(mar=c(4.5,5,1,1), mfrow=c(1,4))
