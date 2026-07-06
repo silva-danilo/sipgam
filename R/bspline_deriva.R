@@ -1,4 +1,3 @@
-
 # packages
 library(mgcv)
 library(splines)
