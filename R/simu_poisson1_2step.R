@@ -1,4 +1,3 @@
-
 # setwd
 # setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
 # setwd("/mnt/chromeos/removable/danvah/sipgam")
