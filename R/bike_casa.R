@@ -17,7 +17,7 @@ by <- as.numeric(dat$yr)
 # model
 X <- model.matrix(~holiday+weekday+yr, data=dat) 
 U <- list(dat$yday, dat$hr)
-Z1 <- model.matrix(~windspeed+hum-1, data=dat)
+Z1 <- model.matrix(~hum+windspeed-1, data=dat)
 Z <- list(Z1, Z1)
 y <- dat$hdemand
 time <- system.time(b <- gplsiam(X, U, Z, y, by), gcFirst=T)[3]
@@ -57,23 +57,33 @@ round(sd, 2)
 w <- abs(alpha_til_2/sd)
 round(1 - pnorm(w), 3)
 
-# summary lambda + edf
+# summary lambda
 lambda <- b$lambda
 round(lambda, 3)
+
+# summary edf
 edf <- sum(b$edf)
 round(edf, 3)
+edf_1 <- sum(b$edf[b$psi_pos$ini[2]:b$psi_pos$fin[2]])
+round(edf_1, 3)
+edf_2 <- sum(b$edf[b$psi_pos$ini[3]:b$psi_pos$fin[3]])
+round(edf_2, 3)
+edf_3 <- sum(b$edf[b$psi_pos$ini[4]:b$psi_pos$fin[4]])
+round(edf_3, 3)
+edf_4 <- sum(b$edf[b$psi_pos$ini[6]:b$psi_pos$fin[6]])
+round(edf_4, 3)
 
 # prep
-palet <- viridis(2, alpha=1, direction=-1)[-1]
-par(mar=c(4.5,5,1,1), mfrow=c(1,2), cex.lab=1.4, cex.axis=1.1, pch=19)
+palet <- viridis(2, direction=-1)[-1]
+par(mar=c(4.5,5,1,1), mfrow=c(1,2), cex.lab=1.3, cex.axis=1.1, pch=19)
 
 # plot f1
 ii <- order(b$u$f1)
 plot(b$f$f1[ii]~b$u$f1[ii], 
      ylab=expression(tilde("f")[1]~"fitted"),
      xlab="day of the year", type="l", lwd=2)
-upp <- smooth.spline(y=b$f_upp$f1, b$u$f1, df=100)
-low <- smooth.spline(y=b$f_low$f1, b$u$f1, df=100)
+upp <- smooth.spline(y=b$f_upp$f1, b$u$f1, lambda=1e-4)
+low <- smooth.spline(y=b$f_low$f1, b$u$f1, lambda=1e-4)
 polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
         col=adjustcolor(palet[1], alpha=0.5), border=NA)
 
@@ -82,8 +92,8 @@ ii <- order(b$u$f2)
 plot(b$f$f2[ii]~b$u$f2[ii],
      ylab=expression(tilde("f")[2]~"fitted"),
      xlab="hour of the day", type="l", lwd=2)
-upp <- smooth.spline(y=b$f_upp$f2, b$u$f2, df=20)
-low <- smooth.spline(y=b$f_low$f2, b$u$f2, df=20)
+upp <- smooth.spline(y=b$f_upp$f2, b$u$f2, lambda=1e-4)
+low <- smooth.spline(y=b$f_low$f2, b$u$f2, lambda=1e-4)
 polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
         col=adjustcolor(palet[1], alpha=0.5), border=NA)
 
@@ -91,9 +101,9 @@ polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
 ii <- order(b$u$f3[by==1])
 plot(b$f$f3[by==1][ii]~b$u$f3[by==1][ii],
      ylab=expression(tilde("f")[3]~"fitted"), 
-     xlab="environmental index 2011 fitted", type="l", lwd=2)
-upp <- smooth.spline(y=b$f_upp$f3[by==1], b$u$f3[by==1], df=100)
-low <- smooth.spline(y=b$f_low$f3[by==1], b$u$f3[by==1], df=100)
+     xlab="environmental 2011 index fitted", type="l", lwd=2)
+upp <- smooth.spline(y=b$f_upp$f3[by==1], b$u$f3[by==1], lambda=1e-4)
+low <- smooth.spline(y=b$f_low$f3[by==1], b$u$f3[by==1], lambda=1e-4)
 polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
         col=adjustcolor(palet[1], alpha=0.5), border=NA)
 
@@ -102,8 +112,8 @@ ii <- order(b$u$f4[by==2])
 plot(b$f$f4[by==2][ii]~b$u$f4[by==2][ii],
      ylab=expression(tilde("f")[4]~"fitted"), 
      xlab="environmental index 2012 fitted", type="l", lwd=2)
-upp <- smooth.spline(y=b$f_upp$f4[by==2], b$u$f4[by==2], df=100)
-low <- smooth.spline(y=b$f_low$f4[by==2], b$u$f4[by==2], df=100)
+upp <- smooth.spline(y=b$f_upp$f4[by==2], b$u$f4[by==2], lambda=1e-4)
+low <- smooth.spline(y=b$f_low$f4[by==2], b$u$f4[by==2], lambda=1e-4)
 polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
         col=adjustcolor(palet[1], alpha=0.5), border=NA)
 
@@ -111,14 +121,7 @@ polygon(c(upp$x, rev(low$x)), c(upp$y, rev(low$y)),
 b$y <- dat$hdemand
 res_gplsiam(b, R=40)
 
-# plot roc
-par(mar=c(4.5,5,1,1), mfrow=c(1,2), cex.lab=1.4, cex.axis=1.1, pch=19)
-roc(dat$hdemand, b$mu, xlab="specificity", ylab="sensitivity",
-    print.auc=T, plot=T, levels=0:1, direction="<")
-
 # summary auc
 roc <- roc(dat$hdemand, b$mu, levels=0:1, direction="<")
 roc$auc
-optimal_coords <- coords(roc, "best", 
-                         ret=c("specificity", "sensitivity", "threshold"))
-round(optimal_coords, 3)
+coords(roc, "best")

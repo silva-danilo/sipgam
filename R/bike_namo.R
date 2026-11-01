@@ -6,8 +6,8 @@ library(lubridate)
 library(viridis)
 
 # setwd
-#setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
-#setwd("/mnt/chromeos/removable/danvah/sipgam")
+# setwd("/home/posmae/danilo.silva/Rede IME/sipgam")
+# setwd("/mnt/chromeos/removable/danvah/sipgam")
 setwd("D:/sipgam")
 
 # load data
@@ -175,13 +175,13 @@ legend("top", legend=c("loess [year = 2012]"), cex=1.3,
 
 # plot windspeed
 plot(cnt~windspeed, data=dat0, col=adjustcolor(palet[1], alpha=0.5),
-     ylab="count rental bikes", xlab="wind speed",
+     ylab="count rental bikes", xlab="windspeed",
      cex.lab=1.7, cex.axis=1.3, pch=19, ylim=c(0,cnt_max))
 lines(lowess(dat0$windspeed, dat0$cnt), lwd=2, col=palet[2])
 legend("top", legend=c("loess [year = 2011]"), cex=1.3,
        bty="n", horiz=T, y.intersp=0.4, lwd=2, col=palet[2])
 plot(cnt~windspeed, data=dat1, col=adjustcolor(palet[1], alpha=0.5),
-     ylab="count rental bikes", xlab="wind speed",
+     ylab="count rental bikes", xlab="windspeed",
      cex.lab=1.7, cex.axis=1.3, pch=19, ylim=c(0,cnt_max))
 lines(lowess(dat1$windspeed, dat1$cnt), lwd=2, col=palet[2])
 legend("top", legend=c("loess [year = 2012]"), cex=1.3,
